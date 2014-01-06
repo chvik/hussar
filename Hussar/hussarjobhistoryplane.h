@@ -3,12 +3,15 @@
 
 #include <QWidget>
 
+class HussarJobView;
+
 class HussarJobHistoryPlane : public QWidget
 {
     Q_OBJECT
 
 public:
     HussarJobHistoryPlane(QWidget *parent=0);
+    void addJobView(HussarJobView *jobView);
 
 signals:
     void resized();

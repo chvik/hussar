@@ -12,13 +12,19 @@ HussarJobView::HussarJobView(QWidget *parent) :
     setLayout(layout);
     layout->addWidget(content);
     setBackgroundRole(QPalette::Base);
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setStyleSheet("* { background: white; border: 1px solid black }");
 }
 
 void HussarJobView::setContent(const QString &text)
 {
-    content->setText(text);
+    QString buf;
+    buf.append(text);
+    for (int i = 1; i < text.size(); ++i) {
+        buf.append("\n");
+        buf.append(text);
+    }
+    content->setText(buf);
 }
 
 void HussarJobView::resizeEvent(QResizeEvent *event)

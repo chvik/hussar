@@ -4,6 +4,8 @@
 #include <QScrollArea>
 #include "hussarsession.h"
 
+class HussarJobHistoryPlane;
+
 class HussarJobHistoryScroll : public QScrollArea
 {
     Q_OBJECT
@@ -21,7 +23,7 @@ private slots:
 
 private:
     HussarSession *session;
-    QWidget *scrollContent;
+    HussarJobHistoryPlane *historyPlane;
 };
 
 #endif // HUSSARJOBHISTORYSCROLL_H
