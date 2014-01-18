@@ -4,6 +4,7 @@
 #include <QScrollArea>
 #include "hussarsession.h"
 
+class QProcess;
 class HussarJobHistoryPlane;
 
 class HussarJobHistoryScroll : public QScrollArea
@@ -17,7 +18,7 @@ signals:
 public slots:
 
 private slots:
-    void onJobCreated(const QString &);
+    void onJobCreated(const QString &command, QProcess *process);
     void onContentResized();
     void onScrollRangeChanged(int min, int max);
 

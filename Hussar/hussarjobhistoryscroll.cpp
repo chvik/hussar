@@ -9,7 +9,7 @@ HussarJobHistoryScroll::HussarJobHistoryScroll(HussarSession *session, QWidget *
     QScrollArea(parent),
     session(session)
 {
-    connect(session, SIGNAL(jobCreated(QString)), this, SLOT(onJobCreated(QString)));
+    connect(session, SIGNAL(jobCreated(QString,QProcess *)), this, SLOT(onJobCreated(QString, QProcess*)));
     historyPlane = new HussarJobHistoryPlane();
     setWidget(historyPlane);
     setAlignment(Qt::AlignBottom);
@@ -18,10 +18,11 @@ HussarJobHistoryScroll::HussarJobHistoryScroll(HussarSession *session, QWidget *
     connect(verticalScrollBar(), SIGNAL(rangeChanged(int,int)), this, SLOT(onScrollRangeChanged(int,int)));
 }
 
-void HussarJobHistoryScroll::onJobCreated(const QString &str)
+void HussarJobHistoryScroll::onJobCreated(const QString &command, QProcess *process)
 {
     HussarJobView *jobView = new HussarJobView();
-    jobView->setContent(str);
+    jobView->setCommandLine(command);
+    jobView->setProcess(process);
     historyPlane->addJobView(jobView);
     qDebug() << "max" << verticalScrollBar()->maximum();
     verticalScrollBar()->setValue(verticalScrollBar()->maximum());

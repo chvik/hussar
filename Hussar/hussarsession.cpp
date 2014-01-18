@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QProcess>
 #include "hussarsession.h"
 
 HussarSession::HussarSession(QObject *parent) :
@@ -9,5 +10,8 @@ HussarSession::HussarSession(QObject *parent) :
 void HussarSession::execute(const QString &command)
 {
     qDebug() << command;
-    emit jobCreated(command);
+    QProcess *process = new QProcess();
+    // TODO: ownership
+    process->start(command);
+    emit jobCreated(command, process);
 }
