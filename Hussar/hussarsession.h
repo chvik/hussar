@@ -18,6 +18,8 @@ public slots:
 
 public:
     void execute(const QString &command);
+
+private:
 };
 
 #endif // HUSSARSESSION_H

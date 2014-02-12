@@ -29,6 +29,7 @@ void HussarJobView::setProcess(QProcess *process)
 {
     this->process = process;
     connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SLOT(onProcessFinished(int,QProcess::ExitStatus)));
+    connect(process, SIGNAL(error(QProcess::ProcessError)), SLOT(onProcessError(QProcess::ProcessError)));
     connect(process, SIGNAL(readyReadStandardOutput()), SLOT(onStdOutReadReady()));
     connect(process, SIGNAL(readyReadStandardError()), SLOT(onStdErrReadReady()));
 }
@@ -43,6 +44,11 @@ void HussarJobView::onProcessFinished(int exitCode, QProcess::ExitStatus exitSta
     loadDataFromStdOut();
     loadDataFromStdErr();
     qDebug() << commandLineView->text() << "finished with" << exitCode;
+}
+
+void HussarJobView::onProcessError(QProcess::ProcessError error)
+{
+    qDebug() << commandLineView->text() << "error:" << error;
 }
 
 void HussarJobView::onStdOutReadReady()

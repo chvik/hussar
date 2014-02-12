@@ -22,6 +22,7 @@ private slots:
     void onStdOutReadReady();
     void onStdErrReadReady();
     void onProcessFinished(int, QProcess::ExitStatus);
+    void onProcessError(QProcess::ProcessError);
 
 private:
     virtual void resizeEvent(QResizeEvent *event);
