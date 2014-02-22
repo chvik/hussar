@@ -4,20 +4,28 @@
 
 #include "hussarjobview.h"
 
+#define MINIMIZED_HEIGHT 5
+#define CONTENT_VERTICAL_MARGIN 8 // FIXME
+
 HussarJobView::HussarJobView(QWidget *parent) :
     QWidget(parent),
     commandLineView(new QLabel(this)),
-    outputView(new QTextEdit(this)),
-    process(0)
+    outputView(new QPlainTextEdit(this)),
+    process(0),
+    maximized(false),
+    maximumHeight(0)
 {
     outputView->setReadOnly(true);
+    outputView->installEventFilter(this);
+    outputView->viewport()->installEventFilter(this);
     QLayout *layout = new QVBoxLayout;
     setLayout(layout);
     layout->addWidget(commandLineView);
     layout->addWidget(outputView);
     setBackgroundRole(QPalette::Base);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    setStyleSheet("* { background: white; border: 1px solid black }");
+    setStyleSheet("QPlainTextEdit { background: white; border: 1px solid black } QLabel { background: #cccccc; border: 1px solid black }");
+    setMaximized(false);
 }
 
 void HussarJobView::setCommandLine(const QString &commandLine)
@@ -34,9 +42,38 @@ void HussarJobView::setProcess(QProcess *process)
     connect(process, SIGNAL(readyReadStandardError()), SLOT(onStdErrReadReady()));
 }
 
+void HussarJobView::setMaximized(bool maximized)
+{
+    qDebug() << "setMaximized" << maximized;
+    if (maximized) {
+        setFocus();
+        outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    } else {
+        clearFocus();
+        outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    }
+    updateSize();
+}
+
+void HussarJobView::setMaximumHeight(int height)
+{
+    maximumHeight = height;
+}
+
 void HussarJobView::resizeEvent(QResizeEvent *event)
 {
+    Q_UNUSED(event);
     qDebug() << "HussarJobView resize" << size();
+}
+
+bool HussarJobView::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == outputView || obj == outputView->viewport()) {
+        if (event->type() == QEvent::KeyPress || event->type() == QEvent::Wheel) {
+            return true;
+        }
+    }
+    return QObject::eventFilter(obj, event);
 }
 
 void HussarJobView::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -73,4 +110,32 @@ void HussarJobView::loadDataFromStdErr()
     QByteArray data = process->readAllStandardError();
     QString text(data); // TODO: \0 bytes
     outputView->insertPlainText(text);
+    updateSize();
+}
+
+void HussarJobView::mouseReleaseEvent(QMouseEvent *event)
+{
+    Q_UNUSED(event);
+    // FIXME: children should pass this
+    qDebug() << "mouse release";
+    setMaximized(true);
+}
+
+void HussarJobView::keyPressEvent(QKeyEvent *event)
+{
+    if (event->key() == Qt::Key_Escape) {
+        setMaximized(false);
+    }
+}
+
+void HussarJobView::updateSize()
+{
+    int lineHeight = outputView->fontMetrics().lineSpacing();
+    int textHeight = outputView->document()->size().height() * lineHeight;
+    if (maximized) {
+        outputView->setFixedHeight(qMin(maximumHeight, textHeight) + CONTENT_VERTICAL_MARGIN);
+    } else {
+        int minHeight = qMin(textHeight, MINIMIZED_HEIGHT * lineHeight);
+        outputView->setFixedHeight(minHeight + CONTENT_VERTICAL_MARGIN);
+    }
 }
