@@ -21,6 +21,7 @@ private slots:
     void onJobCreated(const QString &command, QProcess *process);
     void onContentResized();
     void onScrollRangeChanged(int min, int max);
+    void onMaximizeRequested();
 
 private:
     HussarSession *session;

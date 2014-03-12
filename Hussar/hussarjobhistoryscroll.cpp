@@ -23,6 +23,8 @@ void HussarJobHistoryScroll::onJobCreated(const QString &command, QProcess *proc
     HussarJobView *jobView = new HussarJobView();
     jobView->setCommandLine(command);
     jobView->setProcess(process);
+    jobView->setMaximumHeight(height());
+    connect(jobView, SIGNAL(maximizeRequested()), this, SLOT(onMaximizeRequested()));
     historyPlane->addJobView(jobView);
     qDebug() << "max" << verticalScrollBar()->maximum();
     verticalScrollBar()->setValue(verticalScrollBar()->maximum());
@@ -37,4 +39,12 @@ void HussarJobHistoryScroll::onContentResized()
 void HussarJobHistoryScroll::onScrollRangeChanged(int min, int max)
 {
     qDebug() << "scroll range" << min << max;
+}
+
+void HussarJobHistoryScroll::onMaximizeRequested()
+{
+    HussarJobView *jobView = qobject_cast<HussarJobView *>(QObject::sender());
+    if (jobView) {
+        // TODO: position jobView to the top of the viewport
+    }
 }

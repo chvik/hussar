@@ -17,6 +17,7 @@ public:
     void setMaximumHeight(int height);
 
 signals:
+    void maximizeRequested();
 
 public slots:
 
@@ -39,7 +40,7 @@ private:
     QPlainTextEdit *outputView;
     QProcess *process;
     bool maximized;
-    int maximumHeight;
+    int requestedMaximumHeight;
 };
 
 #endif // HUSSARJOBVIEW_H

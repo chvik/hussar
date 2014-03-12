@@ -13,7 +13,7 @@ HussarJobView::HussarJobView(QWidget *parent) :
     outputView(new QPlainTextEdit(this)),
     process(0),
     maximized(false),
-    maximumHeight(0)
+    requestedMaximumHeight(0)
 {
     outputView->setReadOnly(true);
     outputView->installEventFilter(this);
@@ -45,9 +45,11 @@ void HussarJobView::setProcess(QProcess *process)
 void HussarJobView::setMaximized(bool maximized)
 {
     qDebug() << "setMaximized" << maximized;
+    this->maximized = maximized;
     if (maximized) {
         setFocus();
         outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        emit maximizeRequested();
     } else {
         clearFocus();
         outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -57,7 +59,7 @@ void HussarJobView::setMaximized(bool maximized)
 
 void HussarJobView::setMaximumHeight(int height)
 {
-    maximumHeight = height;
+    requestedMaximumHeight = height;
 }
 
 void HussarJobView::resizeEvent(QResizeEvent *event)
@@ -69,6 +71,12 @@ void HussarJobView::resizeEvent(QResizeEvent *event)
 bool HussarJobView::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == outputView || obj == outputView->viewport()) {
+        if (!maximized) {
+            if (event->type() == QEvent::MouseButtonRelease) {
+                mouseReleaseEvent(static_cast<QMouseEvent *>(event));
+                return true;
+            }
+        }
         if (event->type() == QEvent::KeyPress || event->type() == QEvent::Wheel) {
             return true;
         }
@@ -78,6 +86,7 @@ bool HussarJobView::eventFilter(QObject *obj, QEvent *event)
 
 void HussarJobView::onProcessFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
+    Q_UNUSED(exitStatus);
     loadDataFromStdOut();
     loadDataFromStdErr();
     qDebug() << commandLineView->text() << "finished with" << exitCode;
@@ -132,6 +141,7 @@ void HussarJobView::updateSize()
 {
     int lineHeight = outputView->fontMetrics().lineSpacing();
     int textHeight = outputView->document()->size().height() * lineHeight;
+    int maximumHeight = qMax(requestedMaximumHeight - outputView->y(), MINIMIZED_HEIGHT * lineHeight);
     if (maximized) {
         outputView->setFixedHeight(qMin(maximumHeight, textHeight) + CONTENT_VERTICAL_MARGIN);
     } else {
