@@ -1,6 +1,7 @@
 #include <QLayout>
 #include <QVBoxLayout>
 #include <QtDebug>
+#include <QScrollBar>
 
 #include "hussarjobview.h"
 
@@ -49,12 +50,15 @@ void HussarJobView::setMaximized(bool maximized)
     if (maximized) {
         setFocus();
         outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        updateSize();
         emit maximizeRequested();
     } else {
         clearFocus();
+        outputView->verticalScrollBar()->setValue(0);
         outputView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        updateSize();
+        emit minimizeRequested();
     }
-    updateSize();
 }
 
 void HussarJobView::setMaximumHeight(int height)

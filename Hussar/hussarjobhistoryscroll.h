@@ -6,6 +6,7 @@
 
 class QProcess;
 class HussarJobHistoryPlane;
+class HussarJobView;
 
 class HussarJobHistoryScroll : public QScrollArea
 {
@@ -22,10 +23,16 @@ private slots:
     void onContentResized();
     void onScrollRangeChanged(int min, int max);
     void onMaximizeRequested();
+    void onMinimizeRequested();
+    void minimizeAllExcept(HussarJobView *exceptJobView);
+    void updateScrollPositionToShowMaximizedJobView();
+    void delayedEnsureVisibleMaximizedJobView();
 
 private:
     HussarSession *session;
     HussarJobHistoryPlane *historyPlane;
+    QList<HussarJobView *> jobViews;
+    HussarJobView *maximizedJobView;
 };
 
 #endif // HUSSARJOBHISTORYSCROLL_H

@@ -18,6 +18,7 @@ public:
 
 signals:
     void maximizeRequested();
+    void minimizeRequested();
 
 public slots:
 
