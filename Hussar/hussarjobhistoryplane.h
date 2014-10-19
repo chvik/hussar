@@ -18,6 +18,7 @@ signals:
 
 protected:
     virtual void resizeEvent(QResizeEvent *event);
+    virtual void paintEvent(QPaintEvent *);
 };
 
 #endif // HUSSARJOBHISTORYPLANE_H

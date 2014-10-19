@@ -32,6 +32,7 @@ private slots:
 
 private:
     virtual void resizeEvent(QResizeEvent *event);
+    virtual void paintEvent(QPaintEvent *);
     bool eventFilter(QObject *, QEvent *);
     void loadDataFromStdOut();
     void loadDataFromStdErr();

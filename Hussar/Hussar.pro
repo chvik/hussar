@@ -29,3 +29,9 @@ HEADERS  += \
     hussarjobhistoryplane.h
 
 FORMS    +=
+
+RESOURCES += \
+    hussar.qrc
+
+OTHER_FILES += \
+    hussar.qss

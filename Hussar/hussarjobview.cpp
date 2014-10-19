@@ -2,6 +2,9 @@
 #include <QVBoxLayout>
 #include <QtDebug>
 #include <QScrollBar>
+#include <QStyleOption>
+#include <QPainter>
+#include <QStyle>
 
 #include "hussarjobview.h"
 
@@ -23,10 +26,19 @@ HussarJobView::HussarJobView(QWidget *parent) :
     setLayout(layout);
     layout->addWidget(commandLineView);
     layout->addWidget(outputView);
-    setBackgroundRole(QPalette::Base);
+    setBackgroundRole(QPalette::AlternateBase);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     setStyleSheet("QPlainTextEdit { background: white; border: 1px solid black } QLabel { background: #cccccc; border: 1px solid black }");
     setMaximized(false);
+}
+
+/** this is required for the stylesheet support */
+void HussarJobView::paintEvent(QPaintEvent *)
+{
+    QStyleOption opt;
+    opt.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
 
 void HussarJobView::setCommandLine(const QString &commandLine)
